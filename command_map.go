@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-	"io"
 	"encoding/json"
+	"fmt"
 )
 
 type locationAreaLookup struct {
@@ -17,36 +15,32 @@ type locationAreaLookup struct {
 	}	`jon:"results"`
 }
 
-func getLocationArea(config *pokedexConfig, url string) (data locationAreaLookup, err error) {
-	resp, err := http.Get(url)
-	if err != nil { return }
-	defer resp.Body.Close()
-	if resp.StatusCode > 299 { 
-		err = fmt.Errorf("response failed with status code: %d", resp.StatusCode)
-		return  
-	}
+func getLocationArea(config *pokedexConfig, url string) (locationAreaLookup, error) {
+	var data locationAreaLookup
 
-	// Convert http.response into JSON
-	body, err := io.ReadAll(resp.Body)
-	if err != nil { return }
-	err = json.Unmarshal(body, &data)
-	if err != nil { return }
+	// Get caching lookup results
+	content, err := cachedLookup(config.cache, url)
+	if err != nil { return locationAreaLookup{}, err }
+
+	// Convert []byte contents into locationAreaLookup{}
+	err = json.Unmarshal(content, &data)
+	if err != nil { return locationAreaLookup{}, err }
 
 	// Update global config
 	if data.Next != nil { config.next = *data.Next }
 	if data.Prev != nil { config.prev = *data.Prev }
 
-	return
+	return data, nil
 }
 
-func commandMap(config *pokedexConfig) (err error) {
+func commandMap(config *pokedexConfig, args []string) (err error) {
 	data, err := getLocationArea(config, config.next)
 	if err != nil { return }
 	for _, location := range data.Results {	fmt.Println(location.Name) }
 	return
 }
 
-func commandMapB(config *pokedexConfig) (err error) {
+func commandMapB(config *pokedexConfig, args []string) (err error) {
 	data, err := getLocationArea(config, config.prev)
 	if err != nil { return }
 	for _, location := range data.Results {	fmt.Println(location.Name) }

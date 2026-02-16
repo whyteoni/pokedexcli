@@ -1,8 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-func commandHelp(config *pokedexConfig) (err error) {
+func commandHelp(config *pokedexConfig, args []string) (err error) {
 	fmt.Printf("Welcome to the Pokedex!\nUsage:\n\n")
 	for _, command := range replCommands {
 		fmt.Printf("%s: %s\n", command.name, command.desc)
