@@ -9,12 +9,6 @@ import (
 	"gitlab.com/whyteoni/pokedexcli/internal/pokecache"
 )
 
-type cliCommand struct {
-	name    string
-	desc	string
-	callback    func(*pokedexConfig, []string) error
-}
-
 var replCommands = make(map[string]cliCommand)
 func registerCommand(name, desc string, command func(*pokedexConfig, []string) error) {
 	replCommands[name] = cliCommand{
@@ -25,11 +19,15 @@ func registerCommand(name, desc string, command func(*pokedexConfig, []string) e
 }
 
 func init() {
+	registerCommand("catch", "Attempt to capture a pokemon.", commandCatch)
 	registerCommand("exit", "Closes the pokedex.", commandExit)
+	registerCommand("explore", "Explore a given location. Takes a location name or ID.", commandExplore)
 	registerCommand("help", "Displays a help message.", commandHelp)
+	registerCommand("info", "Show information about your session.", commandInfo)
+	registerCommand("inspect", "Inspect a cpatured pokemon.", commandInspect)
 	registerCommand("map", "Show the next 20 locations.", commandMap)
 	registerCommand("mapb", "Show the previous 20 locations.", commandMapB)
-	registerCommand("explore", "Explore a given location. Takes a location name or ID.", commandExplore)
+	
 }
 
 func cleanInput(text string) (cleanText []string) {

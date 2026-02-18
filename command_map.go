@@ -5,16 +5,6 @@ import (
 	"fmt"
 )
 
-type locationAreaLookup struct {
-	Count	int		`json:"count"`
-	Next	*string	`json:"next"`
-	Prev	*string	`json:"previous"`
-	Results	[]struct{
-		Name	string	`json:"name"`
-		Url		string	`json:"url"`
-	}	`jon:"results"`
-}
-
 func getLocationArea(config *pokedexConfig, url string) (locationAreaLookup, error) {
 	var data locationAreaLookup
 

@@ -2,12 +2,25 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 func commandHelp(config *pokedexConfig, args []string) (err error) {
-	fmt.Printf("Welcome to the Pokedex!\nUsage:\n\n")
+	const padding string = " "
+	var offset int = 0
+
+	fmt.Printf("\nWelcome to the Pokedex!\n\nCommands:\n\n")
+
 	for _, command := range replCommands {
-		fmt.Printf("%s: %s\n", command.name, command.desc)
+		if len(command.name) > offset {
+			offset = len(command.name)
+		}
 	}
+
+	for _, command := range replCommands {
+		filler := strings.Repeat(padding, offset - len(command.name))
+		fmt.Printf("%s%s: %s\n", filler, command.name, command.desc)
+	}
+	fmt.Println()
 	return
 }

@@ -5,19 +5,6 @@ import (
 	"fmt"
 )
 
-type locationDetails struct {
-	GameIndex int `json:"game_index"`
-	ID        int `json:"id"`
-	Name  string `json:"name"`
-	PokemonEncounters []struct {
-		Pokemon struct {
-			Name string `json:"name"`
-			URL  string `json:"url"`
-		} `json:"pokemon"`
-	} `json:"pokemon_encounters"`
-}
-
-
 func commandExplore(config *pokedexConfig, args []string) (err error) {
 	var locationName string = args[0]
 	var url string = "https://pokeapi.co/api/v2/location-area/" + locationName
@@ -25,7 +12,15 @@ func commandExplore(config *pokedexConfig, args []string) (err error) {
 
 	// Get caching lookup results and unmarshal to any{}
 	content, err := cachedLookup(config.cache, url)
-	if err != nil { return err }
+	if err != nil { 
+		errString := err.Error()
+		threeFromTheEnd := len(errString) - 3
+		if errString[threeFromTheEnd:] == "404" {
+			fmt.Printf("Oh no! We did not find %s. Please check the spelling and try again.\n", locationName)
+			return nil
+		}
+		return err 
+	}
 	err = json.Unmarshal(content, &data)
 	if err != nil { return err }
 
